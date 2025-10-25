@@ -1,11 +1,15 @@
 package com.wafflestudio.spring2025.lecture.controller
 
+import com.wafflestudio.spring2025.lecture.dto.LectureSearchResponse
 import com.wafflestudio.spring2025.lecture.service.LectureService
 import com.wafflestudio.spring2025.timeTable.model.Semester
-import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.data.web.PageableDefault
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/v1/lectures") // 👈 API 경로
@@ -30,7 +34,7 @@ class LectureController(
         @RequestParam semester: Semester,
         @RequestParam keyword: String,
         @PageableDefault(size = 20, sort = ["courseTitle"]) pageable: Pageable,
-    ): ResponseEntity<Page<LectureSearchResponse>> {
+    ): ResponseEntity<LectureSearchResponse> {
         val result = lectureService.searchLectures(year, semester, keyword, pageable)
         return ResponseEntity.ok(result)
     }

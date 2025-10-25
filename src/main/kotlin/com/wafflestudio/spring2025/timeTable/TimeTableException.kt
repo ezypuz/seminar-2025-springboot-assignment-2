@@ -52,3 +52,10 @@ class LectureNotInTimeTableException :
         httpStatusCode = HttpStatus.NOT_FOUND,
         msg = "The lecture is not included in this TimeTable",
     )
+
+class TimeConflictException :
+    TimeTableException(
+        errorCode = 0, // 에러 코드 정책에 맞게 수정
+        httpStatusCode = HttpStatus.CONFLICT,
+        msg = "Time conflict with existing lectures",
+    )

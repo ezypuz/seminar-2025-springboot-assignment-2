@@ -48,6 +48,14 @@ dependencies {
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("org.testcontainers:mysql")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
+    // Apache POI (Excel 파일 처리)
+    implementation("org.apache.poi:poi:5.3.0") // 기본 POI
+    implementation("org.apache.poi:poi-ooxml:5.3.0") // .xlsx 파일용 (선택)
+    // XML 파싱 (poi-ooxml 사용 시 필요)
+    implementation("org.apache.xmlbeans:xmlbeans:5.2.1")
+    // Spring WebFlux (WebClient 사용)
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
+    implementation("org.apache.commons:commons-compress:1.26.2")
 }
 
 kotlin {

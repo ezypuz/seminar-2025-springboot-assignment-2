@@ -1,9 +1,11 @@
 package com.wafflestudio.spring2025.lecture.service
 
 import com.wafflestudio.spring2025.lecture.dto.LectureSearchResponse
+import com.wafflestudio.spring2025.lecture.dto.core.ClassSessionDto
+import com.wafflestudio.spring2025.lecture.dto.core.LectureDto
+import com.wafflestudio.spring2025.lecture.repository.ClassSessionRepository
 import com.wafflestudio.spring2025.lecture.repository.LectureRepository
 import com.wafflestudio.spring2025.timeTable.model.Semester
-import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -12,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional(readOnly = true)
 class LectureService(
     private val lectureRepository: LectureRepository,
+    private val classSessionRepository: ClassSessionRepository,
 ) {
     /**
      * 강의 검색
@@ -23,7 +26,7 @@ class LectureService(
         semester: Semester,
         keyword: String,
         pageable: Pageable,
-    ): Page<LectureSearchResponse> {
+    ): LectureSearchResponse { // Page<LectureDto>
         val lectures =
             lectureRepository.findByYearAndSemesterAndKeyword(
                 year = year,
@@ -32,8 +35,24 @@ class LectureService(
                 pageable = pageable,
             )
 
+        // Page<Lecture>를 Page<LectureDto>로 변환
         return lectures.map { lecture ->
-            LectureSearchResponse(
+            // 각 강의의 세션 정보 조회
+            val sessions =
+                classSessionRepository
+                    .findByLectureId(lecture.id!!)
+                    .map { session ->
+                        ClassSessionDto(
+                            dayOfWeek = session.dayOfWeek,
+                            startTime = session.startTime,
+                            endTime = session.endTime,
+                            location = session.location,
+                            courseFormat = session.courseFormat,
+                        )
+                    }
+
+            // LectureDto 생성 (LectureSearchResponse가 아님!)
+            LectureDto(
                 id = lecture.id!!,
                 year = lecture.year,
                 semester = lecture.semester,
@@ -50,11 +69,16 @@ class LectureService(
                 classTime = lecture.classTime,
                 labTime = lecture.labTime,
                 professor = lecture.professor,
+                preRegistrationCount = lecture.preRegistrationCount,
+                preRegistrationCountForNonFreshman = lecture.preRegistrationCountForNonFreshman,
+                preRegistrationCountForFreshman = lecture.preRegistrationCountForFreshman,
                 quota = lecture.quota,
+                nonfreshmanQuota = lecture.nonfreshmanQuota,
                 registrationCount = lecture.registrationCount,
                 remark = lecture.remark,
                 language = lecture.language,
                 status = lecture.status,
+                classSessions = sessions,
             )
         }
     }

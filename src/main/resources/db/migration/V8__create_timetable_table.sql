@@ -4,14 +4,15 @@
 CREATE TABLE IF NOT EXISTS timetable (
                                          id BIGINT AUTO_INCREMENT PRIMARY KEY,
 
-    -- [수정됨] ON DELETE CASCADE 제거
-    -- user가 삭제될 때 timetable이 연쇄 삭제되는 것을 방지.
-    -- 삭제 로직은 Service 레이어가 책임져야 함.
-                                         user_id BIGINT NOT NULL REFERENCES users(id),
+    -- [수정됨] 올바른 FOREIGN KEY 구문 사용
+                                         user_id BIGINT NOT NULL,
 
-    name VARCHAR(255) NOT NULL,
+                                         name VARCHAR(255) NOT NULL,
     year INT NOT NULL,
-    semester VARCHAR(50) NOT NULL
+    semester VARCHAR(50) NOT NULL,
+
+    -- FOREIGN KEY 제약조건을 별도로 정의
+    CONSTRAINT fk_timetable_user FOREIGN KEY (user_id) REFERENCES users(id)
     );
 
 -- 특정 유저의 시간표 목록을 빠르게 찾기 위한 인덱스
