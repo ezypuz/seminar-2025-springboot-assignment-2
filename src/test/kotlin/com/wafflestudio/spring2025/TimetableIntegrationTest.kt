@@ -27,6 +27,14 @@ class TimetableIntegrationTest
             // 시간표를 생성할 수 있다
         }
 
+        /**
+         * 추가 테스트
+         */
+        @Test
+        fun `should not create a time table with a blank name`() {
+            // 시간표를 빈 제목으로 생성할 수 없다
+        }
+
         @Test
         fun `should retrieve all own timetables`() {
             // 자신의 모든 시간표 목록을 조회할 수 있다
@@ -42,6 +50,14 @@ class TimetableIntegrationTest
             // 시간표 이름을 수정할 수 있다
         }
 
+        /**
+         * 추가 테스트
+         */
+        @Test
+        fun `should not update a time table with a blank name`() {
+            // 시간표는 빈 제목으로 수정할 수 없다
+        }
+
         @Test
         fun `should not update another user's timetable`() {
             // 다른 사람의 시간표는 수정할 수 없다
@@ -51,6 +67,11 @@ class TimetableIntegrationTest
         fun `should delete a timetable`() {
             // 시간표를 삭제할 수 있다
         }
+
+        /**
+         * 추가 테스트
+         */
+        // TODO 시간표 삭제 시, 추가했던 강의 내역도 삭제된다.
 
         @Test
         fun `should not delete another user's timetable`() {
@@ -67,9 +88,23 @@ class TimetableIntegrationTest
             // 시간표에 강의를 추가할 수 있다
         }
 
+        /**
+         * 추가 테스트
+         */
+        // TODO 이미 추가된 강의에 대한 추가 요청이 오는 경우, conflict 에러를 반환한다
+
+        /**
+         * 추가 테스트
+         */
+        // TODO 설강되지 않은 강의에 대한 추가 요청이 오는 경우 에러를 반환한다.
+        // TODO 없는 강의를 추가할 수 없다
+        // TODO 없는 강의를 삭제할 수 없다
+        // TODO 없는 시간표는 조회되지 않습니다.
+        // TODO 남의 시간표는 조회할 수 없다.
+
         @Test
         fun `should return error when adding overlapping course to timetable`() {
-            // 시간표에 강의 추가 시, 시간이 겹치면 에러를 반환한다
+            // 시간표에 강의 추가 시, 시간이 겹치면 에러를 반환한다 (같은 강의가 아닌 경우)
         }
 
         @Test
