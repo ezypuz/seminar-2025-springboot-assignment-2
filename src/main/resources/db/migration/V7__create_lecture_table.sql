@@ -1,4 +1,3 @@
--- V7__create_lecture_table.sql
 -- 강의 마스터 테이블 생성 (모든 컬럼 NULL 허용)
 
 CREATE TABLE IF NOT EXISTS lecture (
@@ -31,8 +30,8 @@ CREATE TABLE IF NOT EXISTS lecture (
     nonfreshman_quota INT NULL, -- nonfreshmanQuota
     registration_count INT NULL, -- registrationCount
 
--- 기타 정보
+    -- 기타 정보
     remark TEXT NULL, -- 비고 (길 수 있으므로 TEXT)
     language VARCHAR(255) NULL,
     status VARCHAR(255) NULL
-    );
+);

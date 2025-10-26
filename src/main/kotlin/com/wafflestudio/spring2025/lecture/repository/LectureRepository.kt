@@ -10,7 +10,6 @@ import org.springframework.data.repository.query.Param
 interface LectureRepository :
     CrudRepository<Lecture, Long>,
     PagingAndSortingRepository<Lecture, Long> {
-
     /**
      * 연도, 학기, 키워드로 강의 검색 (세션 포함 + 전체 개수를 한 번에 조회)
      * Window Function으로 전체 개수를 각 행에 포함

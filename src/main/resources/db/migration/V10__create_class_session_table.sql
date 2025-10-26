@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS class_session (
    start_time INT NULL,           -- 시작 시간 (분 단위, 예: 10:00 -> 600)
    end_time INT NULL,             -- 종료 시간 (분 단위, 예: 11:50 -> 710)
 
-                                             location VARCHAR(255) NULL,    -- 강의실
+    location VARCHAR(255) NULL,    -- 강의실
     course_format VARCHAR(255) NULL,  -- 수업 형태 (예: "이론", "실습", "온라인")
 
 -- lecture 테이블의 행(강의)이 삭제되면(ON DELETE CASCADE),
