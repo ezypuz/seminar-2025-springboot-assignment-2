@@ -2,10 +2,10 @@
 -- 강의 마스터 테이블 생성 (모든 컬럼 NULL 허용)
 
 CREATE TABLE IF NOT EXISTS lecture (
-                                       id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
 
     -- [수정] String 타입 및 NULL 허용
-                                       year VARCHAR(50) NULL,
+    year VARCHAR(50) NULL,
     semester VARCHAR(50) NULL,
 
     -- 강의 상세 정보 (엑셀 데이터)
@@ -36,9 +36,3 @@ CREATE TABLE IF NOT EXISTS lecture (
     language VARCHAR(255) NULL,
     status VARCHAR(255) NULL
     );
-
--- 검색 성능을 위한 인덱스 추가 (데이터가 NULL이어도 인덱스는 생성됩니다)
-CREATE INDEX IF NOT EXISTS idx_lecture_year_semester ON lecture(year, semester);
-CREATE INDEX IF NOT EXISTS idx_lecture_course_lecture_num ON lecture(course_number, lecture_number);
-CREATE INDEX IF NOT EXISTS idx_lecture_title ON lecture(course_title);
-CREATE INDEX IF NOT EXISTS idx_lecture_professor ON lecture(professor);

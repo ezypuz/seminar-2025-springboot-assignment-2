@@ -26,7 +26,3 @@ CREATE TABLE IF NOT EXISTS timetable_lecture (
     -- [수정됨] UNIQUE(timetable_id, lecture_id) 제약조건을 제거함.
     -- 중복 강의 추가 여부는 Service 로직에서 검증.
     );
-
--- 조회 성능을 위한 인덱스
-CREATE INDEX IF NOT EXISTS idx_timetable_lecture_table ON timetable_lecture(timetable_id);
-CREATE INDEX IF NOT EXISTS idx_timetable_lecture_lecture ON timetable_lecture(lecture_id);

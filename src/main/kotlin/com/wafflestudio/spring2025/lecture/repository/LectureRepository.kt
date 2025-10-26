@@ -2,8 +2,6 @@ package com.wafflestudio.spring2025.lecture.repository
 
 import com.wafflestudio.spring2025.lecture.model.Lecture
 import com.wafflestudio.spring2025.timeTable.model.Semester
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
 import org.springframework.data.jdbc.repository.query.Query
 import org.springframework.data.repository.CrudRepository
 import org.springframework.data.repository.PagingAndSortingRepository
@@ -12,33 +10,65 @@ import org.springframework.data.repository.query.Param
 interface LectureRepository :
     CrudRepository<Lecture, Long>,
     PagingAndSortingRepository<Lecture, Long> {
+
     /**
-     * 연도, 학기, 키워드로 강의 검색 (페이지네이션)
-     * - 키워드가 강의명(course_title) 또는 교수명(professor)에 포함되는 경우
-     *
-     * @param year 검색할 연도
-     * @param semester 검색할 학기
-     * @param keyword 검색 키워드 (강의명 또는 교수명)
-     * @param pageable 페이지 정보 (page, size, sort)
-     * @return 검색된 강의 목록 (페이지네이션)
+     * 연도, 학기, 키워드로 강의 검색 (세션 포함 + 전체 개수를 한 번에 조회)
+     * Window Function으로 전체 개수를 각 행에 포함
      */
     @Query(
         """
-        SELECT * FROM lecture
-        WHERE year = :year
-          AND semester = :semester
+        SELECT
+            l.id AS lecture_id,
+            l.year,
+            l.semester,
+            l.division,
+            l.college,
+            l.department,
+            l.course_type,
+            l.grade,
+            l.course_number,
+            l.lecture_number,
+            l.course_title,
+            l.subtitle,
+            l.credits,
+            l.class_time,
+            l.lab_time,
+            l.professor,
+            l.pre_registration_count,
+            l.pre_registration_count_for_non_freshman,
+            l.pre_registration_count_for_freshman,
+            l.quota,
+            l.nonfreshman_quota,
+            l.registration_count,
+            l.remark,
+            l.language,
+            l.status,
+            cs.id AS session_id,
+            cs.day_of_week,
+            cs.start_time,
+            cs.end_time,
+            cs.location,
+            cs.course_format,
+            COUNT(DISTINCT l.id) OVER() AS total_count
+        FROM lecture l
+        LEFT JOIN class_session cs ON l.id = cs.lecture_id
+        WHERE l.year = :year
+          AND l.semester = :semester
           AND (
-              course_title LIKE CONCAT('%', :keyword, '%')
-              OR professor LIKE CONCAT('%', :keyword, '%')
+              l.course_title LIKE CONCAT('%', :keyword, '%')
+              OR l.professor LIKE CONCAT('%', :keyword, '%')
           )
-    """,
+        ORDER BY l.id
+        LIMIT :limit OFFSET :offset
+        """,
     )
-    fun findByYearAndSemesterAndKeyword(
+    fun findLectureDetailsWithSessions(
         @Param("year") year: String,
         @Param("semester") semester: Semester,
         @Param("keyword") keyword: String,
-        pageable: Pageable,
-    ): Page<Lecture>
+        @Param("limit") limit: Int,
+        @Param("offset") offset: Int,
+    ): List<LectureDetailRow>
 
     /**
      * 특정 시간표(timeTableId)에 포함된 모든 강의(Lecture)와
@@ -90,7 +120,8 @@ interface LectureRepository :
             cs.start_time,
             cs.end_time,
             cs.location,
-            cs.course_format
+            cs.course_format,
+            0 AS total_count
         FROM
             lecture l
         JOIN
@@ -147,4 +178,5 @@ data class LectureDetailRow(
     val endTime: Int?, // 종료 시간 (분 단위)
     val location: String?, // 강의실
     val courseFormat: String?, // 수업 형태 (대면/비대면 등)
+    val totalCount: Long,
 )
