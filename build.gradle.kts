@@ -1,4 +1,7 @@
 import java.util.Properties
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.api.tasks.testing.logging.TestLogEvent
+import org.gradle.api.tasks.testing.TestResult.ResultType
 
 plugins {
     kotlin("jvm") version "1.9.25"
@@ -77,4 +80,42 @@ flyway {
     url = properties.getProperty("spring.datasource.url")
     user = properties.getProperty("spring.datasource.username")
     password = properties.getProperty("spring.datasource.password")
+}
+
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+
+    // 기본 JUnit 로그
+    testLogging {
+        events = setOf(TestLogEvent.PASSED, TestLogEvent.FAILED, TestLogEvent.SKIPPED)
+        showStandardStreams = false
+        exceptionFormat = TestExceptionFormat.FULL
+    }
+
+    // ✅ 각 테스트 결과마다 콘솔에 SUCCESS / FAIL 표시
+    afterTest(KotlinClosure2<TestDescriptor, TestResult, Unit>({ desc, result ->
+        when (result.resultType) {
+            ResultType.SUCCESS -> {
+                logger.lifecycle("✅ SUCCESS: ${desc.className}.${desc.name}")
+            }
+            ResultType.FAILURE -> {
+                logger.lifecycle("❌ FAIL: ${desc.className}.${desc.name}")
+            }
+            ResultType.SKIPPED -> {
+                logger.lifecycle("⚠️ SKIPPED: ${desc.className}.${desc.name}")
+            }
+            else -> {}
+        }
+    }))
+
+    // ✅ "미구현" 테스트가 자동으로 실패 처리되도록 (TODO() 감지)
+    // → Kotlin의 TODO()는 NotImplementedError를 던지므로 FAILURE로 잡힘
+    // 따로 try/catch 필요 없음
+    // 단, SKIPPED로 표시되는 @Disabled 테스트도 FAIL로 간주하고 싶다면 아래 추가:
+    afterSuite(KotlinClosure2<TestDescriptor, TestResult, Unit>({ desc, result ->
+        if (result.resultType == ResultType.SKIPPED) {
+            logger.lifecycle("❌ UNIMPLEMENTED (SKIPPED): ${desc.className}")
+        }
+    }))
 }
