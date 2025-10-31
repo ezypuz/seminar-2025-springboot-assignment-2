@@ -1,5 +1,6 @@
 package com.wafflestudio.spring2025.batch
 
+import com.wafflestudio.spring2025.batch.dto.LectureImportResult
 import com.wafflestudio.spring2025.batch.repository.SugangSnuRepository
 import com.wafflestudio.spring2025.lecture.model.Lecture
 import com.wafflestudio.spring2025.lecture.repository.LectureRepository
@@ -10,10 +11,10 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 interface SugangSnuFetchService {
-    suspend fun fetchAndImportLectures(
+    fun fetchAndImportLectures(
         year: String,
         semester: Semester,
-    ): ImportResult
+    ): LectureImportResult
 }
 
 @Service
@@ -34,10 +35,10 @@ class SugangSnuFetchServiceImpl(
      * @param semester 학기
      * @return 저장 결과 통계
      */
-    override suspend fun fetchAndImportLectures(
+    override fun fetchAndImportLectures(
         year: String,
         semester: Semester,
-    ): ImportResult {
+    ): LectureImportResult {
         log.info("Starting to fetch lectures for $year-$semester")
 
         // 1. 엑셀 파일 다운로드
@@ -76,7 +77,7 @@ class SugangSnuFetchServiceImpl(
 
         log.info("Import completed: success=$successCount, fail=$failCount")
 
-        return ImportResult(
+        return LectureImportResult(
             totalCount = successCount + failCount,
             successCount = successCount,
             failCount = failCount,
@@ -183,12 +184,3 @@ class SugangSnuFetchServiceImpl(
         return quota to nonfreshmanQuota
     }
 }
-
-/**
- * 강의 임포트 결과
- */
-data class ImportResult(
-    val totalCount: Int, // 전체 처리된 행 수
-    val successCount: Int, // 성공한 행 수
-    val failCount: Int, // 실패한 행 수
-)

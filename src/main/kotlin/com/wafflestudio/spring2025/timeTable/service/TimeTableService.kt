@@ -1,11 +1,13 @@
 package com.wafflestudio.spring2025.timeTable.service
 
-import com.wafflestudio.spring2025.comment.CommentUpdateForbiddenException
 import com.wafflestudio.spring2025.lecture.LectureAlreadyInTimeTableException
 import com.wafflestudio.spring2025.lecture.LectureNotFoundException
 import com.wafflestudio.spring2025.lecture.dto.core.ClassSessionDto
 import com.wafflestudio.spring2025.lecture.dto.core.LectureDto
+import com.wafflestudio.spring2025.lecture.model.ClassSession
+import com.wafflestudio.spring2025.lecture.model.Lecture
 import com.wafflestudio.spring2025.lecture.repository.ClassSessionRepository
+import com.wafflestudio.spring2025.lecture.repository.LectureDetailRow
 import com.wafflestudio.spring2025.lecture.repository.LectureRepository
 import com.wafflestudio.spring2025.timeTable.LectureNotInTimeTableException
 import com.wafflestudio.spring2025.timeTable.TimeConflictException
@@ -99,7 +101,7 @@ class TimeTableService(
                 }
 
         if (timeTable.userId != user.id) {
-            throw CommentUpdateForbiddenException()
+            throw TimeTableModifyForbiddenException()
         }
 
         timeTableRepository.delete(timeTable)
@@ -215,14 +217,8 @@ class TimeTableService(
         lectureId: Long,
     ) {
         // 1. 시간표 조회 및 소유권 확인
-        val timeTable =
-            timeTableRepository
-                .findById(timeTableId)
-                .orElseThrow { TimeTableNotFoundException() }
-
-        if (timeTable.userId != userId) {
-            throw TimeTableModifyForbiddenException()
-        }
+        val timeTable = validateTimeTableExists(timeTableId)
+        ensureUserCanModifyTimetable(timeTable, userId)
 
         // 2. 해당 시간표에 강의가 포함되어 있는지 확인
         if (!timeTableLectureRepository.existsByTimeTableIdAndLectureId(timeTableId, lectureId)) {
@@ -247,20 +243,11 @@ class TimeTableService(
         lectureId: Long,
     ): TimeTableDetailResponse {
         // 1. 시간표 조회 및 소유권 확인
-        val timeTable =
-            timeTableRepository
-                .findById(timeTableId)
-                .orElseThrow { TimeTableNotFoundException() }
-
-        if (timeTable.userId != user.id) {
-            throw TimeTableModifyForbiddenException()
-        }
+        val timeTable = validateTimeTableExists(timeTableId)
+        ensureUserCanModifyTimetable(timeTable, user.id!!)
 
         // 2. 강의 존재 여부 확인
-        val lecture =
-            lectureRepository
-                .findById(lectureId)
-                .orElseThrow { LectureNotFoundException() }
+        validateLectureExists(lectureId)
 
         // 3. 이미 추가된 강의인지 확인
         if (timeTableLectureRepository.existsByTimeTableIdAndLectureId(timeTableId, lectureId)) {
@@ -286,13 +273,32 @@ class TimeTableService(
         return getTimeTableDetail(timeTableId, user)
     }
 
+    private fun validateTimeTableExists(timeTableId: Long): TimeTable =
+        timeTableRepository
+            .findById(timeTableId)
+            .orElseThrow { TimeTableNotFoundException() }
+
+    private fun ensureUserCanModifyTimetable(
+        timeTable: TimeTable,
+        userId: Long,
+    ) {
+        if (timeTable.userId != userId) {
+            throw TimeTableModifyForbiddenException()
+        }
+    }
+
+    private fun validateLectureExists(lectureId: Long): Lecture =
+        lectureRepository
+            .findById(lectureId)
+            .orElseThrow { LectureNotFoundException() }
+
     /**
      * 시간 중복 검증
      * - 새로 추가하려는 강의의 세션들이 기존 강의들과 시간이 겹치는지 확인
      */
     private fun validateTimeConflict(
-        newSessions: List<com.wafflestudio.spring2025.lecture.model.ClassSession>,
-        existingRows: List<com.wafflestudio.spring2025.lecture.repository.LectureDetailRow>,
+        newSessions: List<ClassSession>,
+        existingRows: List<LectureDetailRow>,
     ) {
         // 기존 강의들의 세션 정보 추출
         val existingSessions =
@@ -323,7 +329,7 @@ class TimeTableService(
      * - 같은 요일이고, 시간이 겹치면 true 반환
      */
     private fun isTimeConflict(
-        session1: com.wafflestudio.spring2025.lecture.model.ClassSession,
+        session1: ClassSession,
         session2: ClassSessionDto,
     ): Boolean {
         // 요일이 다르면 겹치지 않음

@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS timetable (
     user_id BIGINT NOT NULL,
 
     name VARCHAR(255) NOT NULL,
-    year INT NOT NULL,
+    academic_year INT NOT NULL,
     semester VARCHAR(50) NOT NULL,
 
     -- FOREIGN KEY 제약조건을 별도로 정의
