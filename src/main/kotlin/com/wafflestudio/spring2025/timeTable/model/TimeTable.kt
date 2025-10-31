@@ -8,14 +8,10 @@ import org.springframework.data.relational.core.mapping.Table
 data class TimeTable(
     @Id
     var id: Long? = null,
-
     var name: String,
-
-    @Column("academic_year")  // ← 'year' 대신 안전한 이름
+    @Column("academic_year")
     var year: Int,
-
     var semester: Semester,
-
-    @Column("user_id")        // ← 컬럼명을 명시적으로 매핑
+    @Column("user_id")
     var userId: Long,
 )

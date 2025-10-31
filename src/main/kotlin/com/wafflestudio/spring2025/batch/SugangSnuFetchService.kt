@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 interface SugangSnuFetchService {
-    suspend fun fetchAndImportLectures(
+    fun fetchAndImportLectures(
         year: String,
         semester: Semester,
     ): LectureImportResult
@@ -35,7 +35,7 @@ class SugangSnuFetchServiceImpl(
      * @param semester 학기
      * @return 저장 결과 통계
      */
-    override suspend fun fetchAndImportLectures(
+    override fun fetchAndImportLectures(
         year: String,
         semester: Semester,
     ): LectureImportResult {
@@ -184,5 +184,3 @@ class SugangSnuFetchServiceImpl(
         return quota to nonfreshmanQuota
     }
 }
-
-

@@ -273,28 +273,24 @@ class TimeTableService(
         return getTimeTableDetail(timeTableId, user)
     }
 
-    private fun validateTimeTableExists(
-        timeTableId: Long,
-    ): TimeTable {
-        return timeTableRepository.findById(timeTableId)
+    private fun validateTimeTableExists(timeTableId: Long): TimeTable =
+        timeTableRepository
+            .findById(timeTableId)
             .orElseThrow { TimeTableNotFoundException() }
-    }
 
     private fun ensureUserCanModifyTimetable(
         timeTable: TimeTable,
         userId: Long,
     ) {
-
         if (timeTable.userId != userId) {
             throw TimeTableModifyForbiddenException()
         }
-
     }
 
-    private fun validateLectureExists(lectureId: Long): Lecture {
-        return lectureRepository.findById(lectureId)
+    private fun validateLectureExists(lectureId: Long): Lecture =
+        lectureRepository
+            .findById(lectureId)
             .orElseThrow { LectureNotFoundException() }
-    }
 
     /**
      * 시간 중복 검증

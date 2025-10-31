@@ -18,7 +18,7 @@ class SugangSnuBatchController(
      * (관리자 전용 API)
      */
     @PostMapping("/import-lectures")
-    suspend fun importLectures(
+    fun importLectures(
         @RequestParam year: String,
         @RequestParam semester: Semester,
     ): ResponseEntity<LectureImportResult> {

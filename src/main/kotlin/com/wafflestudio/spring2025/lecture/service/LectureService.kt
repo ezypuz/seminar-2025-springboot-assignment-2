@@ -22,13 +22,14 @@ class LectureService(
         pageable: Pageable,
     ): Page<LectureDto> {
         // 1. ✅ 강의 ID만 조회 (페이지네이션 적용)
-        val lectureIds = lectureRepository.findLectureIds(
-            year = year,
-            semester = semester,
-            keyword = keyword,
-            limit = pageable.pageSize,
-            offset = pageable.offset.toInt(),
-        )
+        val lectureIds =
+            lectureRepository.findLectureIds(
+                year = year,
+                semester = semester,
+                keyword = keyword,
+                limit = pageable.pageSize,
+                offset = pageable.offset.toInt(),
+            )
 
         // 강의가 없으면 빈 페이지 반환
         if (lectureIds.isEmpty()) {
