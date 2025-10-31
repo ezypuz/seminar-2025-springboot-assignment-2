@@ -38,8 +38,8 @@ class DataGenerator(
         val user =
             userRepository.save(
                 User(
-                    username = username ?: "user-${Random.Default.nextInt(1000000)}",
-                    password = BCrypt.hashpw(password ?: "password-${Random.Default.nextInt(1000000)}", BCrypt.gensalt()),
+                    username = username ?: "user-${Random.nextInt(1000000)}",
+                    password = BCrypt.hashpw(password ?: "password-${Random.nextInt(1000000)}", BCrypt.gensalt()),
                 ),
             )
         return user to jwtTokenProvider.createToken(user.username)
@@ -49,7 +49,7 @@ class DataGenerator(
         val board =
             boardRepository.save(
                 Board(
-                    name = name ?: "board-${Random.Default.nextInt(1000000)}",
+                    name = name ?: "board-${Random.nextInt(1000000)}",
                 ),
             )
         return board
@@ -64,8 +64,8 @@ class DataGenerator(
         val post =
             postRepository.save(
                 Post(
-                    title = title ?: "title-${Random.Default.nextInt(1000000)}",
-                    content = content ?: "content-${Random.Default.nextInt(1000000)}",
+                    title = title ?: "title-${Random.nextInt(1000000)}",
+                    content = content ?: "content-${Random.nextInt(1000000)}",
                     userId = (user ?: generateUser().first).id!!,
                     boardId = (board ?: generateBoard()).id!!,
                 ),
@@ -81,7 +81,7 @@ class DataGenerator(
         val comment =
             commentRepository.save(
                 Comment(
-                    content = content ?: "content-${Random.Default.nextInt(1000000)}",
+                    content = content ?: "content-${Random.nextInt(1000000)}",
                     userId = (user ?: generateUser().first).id!!,
                     postId = (post ?: generatePost()).id!!,
                 ),
@@ -101,7 +101,7 @@ class DataGenerator(
         val owner = user ?: generateUser().first
         return timeTableRepository.save(
             TimeTable(
-                name = name ?: "timetable-${Random.Default.nextInt(1000000)}",
+                name = name ?: "timetable-${Random.nextInt(1000000)}",
                 year = year,
                 semester = semester,
                 userId = owner.id!!,
@@ -130,14 +130,14 @@ class DataGenerator(
                     department = "컴퓨터공학부",
                     courseType = "전공필수",
                     grade = 3,
-                    courseNumber = "M1522.${Random.Default.nextInt(1000, 9999)}",
+                    courseNumber = "M1522.${Random.nextInt(1000, 9999)}",
                     lectureNumber = "001",
-                    courseTitle = courseTitle ?: "강의-${Random.Default.nextInt(1000000)}",
+                    courseTitle = courseTitle ?: "강의-${Random.nextInt(1000000)}",
                     subtitle = null,
                     credits = credits,
                     classTime = 3,
                     labTime = 0,
-                    professor = professor ?: "교수-${Random.Default.nextInt(100)}",
+                    professor = professor ?: "교수-${Random.nextInt(100)}",
                     preRegistrationCount = null,
                     preRegistrationCountForNonFreshman = null,
                     preRegistrationCountForFreshman = null,
