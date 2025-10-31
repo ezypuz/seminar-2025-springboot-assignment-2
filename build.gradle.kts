@@ -59,6 +59,9 @@ dependencies {
     // Spring WebFlux (WebClient 사용)
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.apache.commons:commons-compress:1.26.2")
+    // swagger
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.11")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
 }
 
 kotlin {
