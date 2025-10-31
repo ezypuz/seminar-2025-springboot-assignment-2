@@ -50,6 +50,9 @@ class JwtAuthenticationFilter(
                 "/v3/api-docs/**",
                 "/swagger-resources/**",
                 "/swagger-ui.html",
+                "/api/v1/auth/**", // 인증 관련 API
+                "/api/v1/lectures/**", //  강의 검색 API (공개)
+                "/admin/batch/**",
             )
         return swaggerPaths.any { pattern -> pathMatcher.match(pattern, path) }
     }
