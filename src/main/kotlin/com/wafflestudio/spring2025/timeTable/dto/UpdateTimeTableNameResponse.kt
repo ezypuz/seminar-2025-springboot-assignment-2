@@ -2,4 +2,4 @@ package com.wafflestudio.spring2025.timeTable.dto
 
 import com.wafflestudio.spring2025.timeTable.dto.core.TimeTableDto
 
-typealias UpdateTimeTableResponse = TimeTableDto
+typealias UpdateTimeTableNameResponse = TimeTableDto

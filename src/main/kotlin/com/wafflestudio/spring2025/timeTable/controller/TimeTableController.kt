@@ -6,7 +6,7 @@ import com.wafflestudio.spring2025.timeTable.dto.CreateTimeTableResponse
 import com.wafflestudio.spring2025.timeTable.dto.ListTimeTableResponse
 import com.wafflestudio.spring2025.timeTable.dto.TimeTableDetailResponse
 import com.wafflestudio.spring2025.timeTable.dto.UpdateTimeTableNameRequest
-import com.wafflestudio.spring2025.timeTable.dto.UpdateTimeTableResponse
+import com.wafflestudio.spring2025.timeTable.dto.UpdateTimeTableNameResponse
 import com.wafflestudio.spring2025.timeTable.service.TimeTableService
 import com.wafflestudio.spring2025.user.LoggedInUser
 import com.wafflestudio.spring2025.user.model.User
@@ -84,7 +84,7 @@ class TimeTableController(
         @LoggedInUser user: User,
         @PathVariable("timeTableId") timeTableId: Long,
         @RequestBody updateRequest: UpdateTimeTableNameRequest,
-    ): ResponseEntity<UpdateTimeTableResponse> {
+    ): ResponseEntity<UpdateTimeTableNameResponse> {
         val timeTableDto = timeTableService.updateTimeTableName(timeTableId, user, updateRequest.name)
         return ResponseEntity.ok(timeTableDto)
     }

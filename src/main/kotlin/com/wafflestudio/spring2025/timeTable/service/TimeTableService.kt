@@ -17,7 +17,7 @@ import com.wafflestudio.spring2025.timeTable.TimeTableNotFoundException
 import com.wafflestudio.spring2025.timeTable.TimeTableReadForbiddenException
 import com.wafflestudio.spring2025.timeTable.TimeTableUpdateForbiddenException
 import com.wafflestudio.spring2025.timeTable.dto.TimeTableDetailResponse
-import com.wafflestudio.spring2025.timeTable.dto.UpdateTimeTableResponse
+import com.wafflestudio.spring2025.timeTable.dto.UpdateTimeTableNameResponse
 import com.wafflestudio.spring2025.timeTable.dto.core.TimeTableDto
 import com.wafflestudio.spring2025.timeTable.model.Semester
 import com.wafflestudio.spring2025.timeTable.model.TimeTable
@@ -70,7 +70,7 @@ class TimeTableService(
         timeTableId: Long,
         user: User,
         name: String,
-    ): UpdateTimeTableResponse {
+    ): UpdateTimeTableNameResponse {
         if (name.isBlank()) {
             throw TimeTableNameBlankException()
         }
