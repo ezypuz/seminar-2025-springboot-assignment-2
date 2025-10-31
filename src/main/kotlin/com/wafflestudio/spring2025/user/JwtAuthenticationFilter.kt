@@ -16,6 +16,7 @@ class JwtAuthenticationFilter(
         response: HttpServletResponse,
         filterChain: FilterChain,
     ) {
+        // ✅ [수정됨] isPublicPath를 먼저 호출
         if (isPublicPath(request.requestURI)) {
             filterChain.doFilter(request, response)
             return
@@ -44,16 +45,26 @@ class JwtAuthenticationFilter(
 
     private fun isPublicPath(path: String): Boolean {
         val pathMatcher = AntPathMatcher()
-        val swaggerPaths =
-            arrayOf(
-                "/swagger-ui/**",
-                "/v3/api-docs/**",
-                "/swagger-resources/**",
-                "/swagger-ui.html",
+
+        // 1. 기존 공개 경로
+        val publicPaths =
+            listOf(
                 "/api/v1/auth/**", // 인증 관련 API
                 "/api/v1/lectures/**", //  강의 검색 API (공개)
                 "/admin/batch/**",
             )
-        return swaggerPaths.any { pattern -> pathMatcher.match(pattern, path) }
+
+        // 2. Swagger 경로 (추가)
+        val swaggerPaths =
+            listOf(
+                "/swagger-ui/**",
+                "/v3/api-docs/**",
+                "/swagger-resources/**",
+                "/swagger-ui.html",
+            )
+
+        // 3. 두 리스트를 합쳐서 한 번에 검사
+        // (return 문 뒤에 코드를 쓴 것이 문제였습니다)
+        return (publicPaths + swaggerPaths).any { pathMatcher.match(it, path) }
     }
 }
