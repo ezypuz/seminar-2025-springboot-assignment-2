@@ -1,5 +1,6 @@
 package com.wafflestudio.spring2025.batch
 
+import com.wafflestudio.spring2025.batch.dto.LectureImportResult
 import com.wafflestudio.spring2025.timeTable.model.Semester
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
@@ -20,7 +21,7 @@ class SugangSnuBatchController(
     suspend fun importLectures(
         @RequestParam year: String,
         @RequestParam semester: Semester,
-    ): ResponseEntity<ImportResult> {
+    ): ResponseEntity<LectureImportResult> {
         val result = sugangSnuFetchService.fetchAndImportLectures(year, semester)
         return ResponseEntity.ok(result)
     }

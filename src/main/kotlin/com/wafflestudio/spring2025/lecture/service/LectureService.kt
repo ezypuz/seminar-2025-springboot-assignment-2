@@ -15,37 +15,40 @@ import org.springframework.transaction.annotation.Transactional
 class LectureService(
     private val lectureRepository: LectureRepository,
 ) {
-    /**
-     * 강의 검색 (페이지네이션)
-     * - 단 한 번의 쿼리로 강의 + 세션 + 전체 개수 조회
-     */
     fun searchLectures(
         year: String,
         semester: Semester,
         keyword: String,
         pageable: Pageable,
     ): Page<LectureDto> {
-        // 1. 한 번의 쿼리로 모든 데이터 조회 (강의 + 세션 + 전체 개수)
-        val rows =
-            lectureRepository.findLectureDetailsWithSessions(
-                year = year,
-                semester = semester,
-                keyword = keyword,
-                limit = pageable.pageSize,
-                offset = pageable.offset.toInt(),
-            )
+        // 1. ✅ 강의 ID만 조회 (페이지네이션 적용)
+        val lectureIds = lectureRepository.findLectureIds(
+            year = year,
+            semester = semester,
+            keyword = keyword,
+            limit = pageable.pageSize,
+            offset = pageable.offset.toInt(),
+        )
 
-        // 2. 전체 개수 추출 (첫 번째 row에서 가져오기)
-        val total = rows.firstOrNull()?.totalCount ?: 0L
+        // 강의가 없으면 빈 페이지 반환
+        if (lectureIds.isEmpty()) {
+            val total = lectureRepository.countLectures(year, semester, keyword)
+            return PageImpl(emptyList(), pageable, total)
+        }
 
-        // 3. lectureId로 그룹핑하여 LectureDto 생성
+        // 2. ✅ 해당 강의들의 상세 정보 + 세션 조회
+        val rows = lectureRepository.findLectureDetailsByIds(lectureIds)
+
+        // 3. ✅ 전체 개수 조회
+        val total = lectureRepository.countLectures(year, semester, keyword)
+
+        // 4. ✅ lectureId로 그룹핑하여 LectureDto 생성
         val lectureDtos =
             rows
                 .groupBy { it.lectureId }
                 .map { (_, lectureRows) ->
                     val first = lectureRows.first()
 
-                    // 세션 정보 수집 (sessionId가 null이 아닌 것만)
                     val sessions =
                         lectureRows
                             .filter { it.sessionId != null }
@@ -89,7 +92,6 @@ class LectureService(
                     )
                 }
 
-        // 4. Page 객체로 변환
         return PageImpl(lectureDtos, pageable, total)
     }
 }

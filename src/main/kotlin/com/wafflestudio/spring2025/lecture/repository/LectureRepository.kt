@@ -11,8 +11,32 @@ interface LectureRepository :
     CrudRepository<Lecture, Long>,
     PagingAndSortingRepository<Lecture, Long> {
     /**
-     * 연도, 학기, 키워드로 강의 검색 (세션 포함 + 전체 개수를 한 번에 조회)
-     * Window Function으로 전체 개수를 각 행에 포함
+     * ✅ 1단계: 강의 ID만 조회 (페이지네이션)
+     */
+    @Query(
+        """
+        SELECT id
+        FROM lecture
+        WHERE year = :year
+          AND semester = :semester
+          AND (
+              course_title LIKE CONCAT('%', :keyword, '%')
+              OR professor LIKE CONCAT('%', :keyword, '%')
+          )
+        ORDER BY id
+        LIMIT :limit OFFSET :offset
+        """,
+    )
+    fun findLectureIds(
+        @Param("year") year: String,
+        @Param("semester") semester: Semester,
+        @Param("keyword") keyword: String,
+        @Param("limit") limit: Int,
+        @Param("offset") offset: Int,
+    ): List<Long>
+
+    /**
+     * ✅ 2단계: 강의 상세 정보 + 세션 조회
      */
     @Query(
         """
@@ -47,26 +71,15 @@ interface LectureRepository :
             cs.start_time,
             cs.end_time,
             cs.location,
-            cs.course_format,
-            COUNT(DISTINCT l.id) OVER() AS total_count
+            cs.course_format
         FROM lecture l
         LEFT JOIN class_session cs ON l.id = cs.lecture_id
-        WHERE l.year = :year
-          AND l.semester = :semester
-          AND (
-              l.course_title LIKE CONCAT('%', :keyword, '%')
-              OR l.professor LIKE CONCAT('%', :keyword, '%')
-          )
+        WHERE l.id IN (:lectureIds)
         ORDER BY l.id
-        LIMIT :limit OFFSET :offset
         """,
     )
-    fun findLectureDetailsWithSessions(
-        @Param("year") year: String,
-        @Param("semester") semester: Semester,
-        @Param("keyword") keyword: String,
-        @Param("limit") limit: Int,
-        @Param("offset") offset: Int,
+    fun findLectureDetailsByIds(
+        @Param("lectureIds") lectureIds: List<Long>,
     ): List<LectureDetailRow>
 
     /**
@@ -119,8 +132,7 @@ interface LectureRepository :
             cs.start_time,
             cs.end_time,
             cs.location,
-            cs.course_format,
-            0 AS total_count
+            cs.course_format
         FROM
             lecture l
         JOIN
@@ -134,6 +146,27 @@ interface LectureRepository :
     fun findLectureDetailsByTimeTableId(
         @Param("timeTableId") timeTableId: Long,
     ): List<LectureDetailRow>
+
+    /**
+     * ✅ 새로 추가: 강의 개수 조회
+     */
+    @Query(
+        """
+        SELECT COUNT(*)
+        FROM lecture
+        WHERE year = :year
+          AND semester = :semester
+          AND (
+              course_title LIKE CONCAT('%', :keyword, '%')
+              OR professor LIKE CONCAT('%', :keyword, '%')
+          )
+        """,
+    )
+    fun countLectures(
+        @Param("year") year: String,
+        @Param("semester") semester: Semester,
+        @Param("keyword") keyword: String,
+    ): Long
 }
 
 /**
@@ -177,5 +210,4 @@ data class LectureDetailRow(
     val endTime: Int?, // 종료 시간 (분 단위)
     val location: String?, // 강의실
     val courseFormat: String?, // 수업 형태 (대면/비대면 등)
-    val totalCount: Long,
 )
