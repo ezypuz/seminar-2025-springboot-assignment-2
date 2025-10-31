@@ -3,6 +3,7 @@ package com.wafflestudio.spring2025
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.wafflestudio.spring2025.batch.dto.LectureImportResult
 import com.wafflestudio.spring2025.timeTable.model.Semester
+import org.hamcrest.Matchers
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -15,7 +16,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.testcontainers.junit.jupiter.Testcontainers
-import org.hamcrest.Matchers
 
 @SpringBootTest
 @ActiveProfiles("test")
