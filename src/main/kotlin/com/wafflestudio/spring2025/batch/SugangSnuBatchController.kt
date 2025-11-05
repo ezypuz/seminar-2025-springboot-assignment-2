@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController
 class SugangSnuBatchController(
     private val sugangSnuFetchService: SugangSnuFetchService,
 ) {
-
     @PostMapping("/import-lectures")
     @Operation(
         summary = "수강신청(Sugang SNU) 강의 데이터 가져오기",
@@ -30,32 +29,31 @@ class SugangSnuBatchController(
             자동으로 가져와 데이터베이스에 저장합니다.
             
             ⚠️ **관리자 전용 API**이며, 실행 시 기존 데이터는 갱신될 수 있습니다.
-        """
+        """,
     )
     @ApiResponses(
         value = [
             ApiResponse(
                 responseCode = "200",
                 description = "강의 데이터 가져오기 및 DB 저장 성공",
-                content = [Content(schema = Schema(implementation = LectureImportResult::class))]
+                content = [Content(schema = Schema(implementation = LectureImportResult::class))],
             ),
             ApiResponse(responseCode = "400", description = "잘못된 요청 파라미터"),
             ApiResponse(responseCode = "401", description = "인증 실패 (관리자 권한 필요)"),
-            ApiResponse(responseCode = "500", description = "서버 내부 오류 (크롤링 실패 또는 DB 오류)")
-        ]
+            ApiResponse(responseCode = "500", description = "서버 내부 오류 (크롤링 실패 또는 DB 오류)"),
+        ],
     )
     fun importLectures(
         @Parameter(
             description = "가져올 학기의 연도 (예: 2025)",
             example = "2025",
-            required = true
+            required = true,
         )
         @RequestParam year: String,
-
         @Parameter(
             description = "학기 구분 (예: SPRING, SUMMER, FALL, WINTER)",
             example = "SPRING",
-            required = true
+            required = true,
         )
         @RequestParam semester: Semester,
     ): ResponseEntity<LectureImportResult> {

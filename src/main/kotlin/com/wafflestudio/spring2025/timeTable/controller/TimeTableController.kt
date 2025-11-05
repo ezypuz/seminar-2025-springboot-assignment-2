@@ -1,6 +1,12 @@
 package com.wafflestudio.spring2025.timeTable.controller
 
-import com.wafflestudio.spring2025.timeTable.dto.*
+import com.wafflestudio.spring2025.timeTable.dto.AddLectureRequest
+import com.wafflestudio.spring2025.timeTable.dto.CreateTimeTableRequest
+import com.wafflestudio.spring2025.timeTable.dto.CreateTimeTableResponse
+import com.wafflestudio.spring2025.timeTable.dto.ListTimeTableResponse
+import com.wafflestudio.spring2025.timeTable.dto.TimeTableDetailResponse
+import com.wafflestudio.spring2025.timeTable.dto.UpdateTimeTableNameRequest
+import com.wafflestudio.spring2025.timeTable.dto.UpdateTimeTableNameResponse
 import com.wafflestudio.spring2025.timeTable.service.TimeTableService
 import com.wafflestudio.spring2025.user.LoggedInUser
 import com.wafflestudio.spring2025.user.model.User
@@ -8,21 +14,27 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
-import io.swagger.v3.oas.annotations.parameters.RequestBody as OasRequestBody
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PatchMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
+import io.swagger.v3.oas.annotations.parameters.RequestBody as OasRequestBody
 
+// @SecurityRequirement(name = "bearerAuth")  // JWT 사용 시 활성화
 @RestController
 @RequestMapping("/api/v1/timetables")
 @Tag(name = "TimeTable", description = "시간표 관리 API")
-// @SecurityRequirement(name = "bearerAuth")  // JWT 사용 시 활성화
 class TimeTableController(
     private val timeTableService: TimeTableService,
 ) {
-
     @PostMapping
     @Operation(summary = "시간표 생성", description = "새로운 시간표를 생성합니다.")
     @ApiResponses(
@@ -31,17 +43,16 @@ class TimeTableController(
             ApiResponse(responseCode = "400", description = "요청 바디 오류"),
             ApiResponse(responseCode = "401", description = "인증 필요"),
             ApiResponse(responseCode = "500", description = "서버 내부 오류"),
-        ]
+        ],
     )
     fun createTimeTable(
         @Parameter(hidden = true)
         @LoggedInUser user: User,
-
         @RequestBody
         @OasRequestBody(
             description = "생성할 시간표 정보",
             required = true,
-            content = [Content(schema = Schema(implementation = CreateTimeTableRequest::class))]
+            content = [Content(schema = Schema(implementation = CreateTimeTableRequest::class))],
         )
         createRequest: CreateTimeTableRequest,
     ): ResponseEntity<CreateTimeTableResponse> {
@@ -62,7 +73,7 @@ class TimeTableController(
             ApiResponse(responseCode = "200", description = "조회 성공"),
             ApiResponse(responseCode = "401", description = "인증 필요"),
             ApiResponse(responseCode = "500", description = "서버 내부 오류"),
-        ]
+        ],
     )
     fun getTimeTableList(
         @Parameter(hidden = true)
@@ -80,12 +91,11 @@ class TimeTableController(
             ApiResponse(responseCode = "401", description = "인증 필요"),
             ApiResponse(responseCode = "403", description = "접근 권한 없음"),
             ApiResponse(responseCode = "404", description = "시간표를 찾을 수 없음"),
-        ]
+        ],
     )
     fun getTimeTableDetail(
         @Parameter(hidden = true)
         @LoggedInUser user: User,
-
         @Parameter(description = "조회할 시간표 ID", example = "1", required = true)
         @PathVariable("timeTableId") timeTableId: Long,
     ): ResponseEntity<TimeTableDetailResponse> {
@@ -106,20 +116,18 @@ class TimeTableController(
             ApiResponse(responseCode = "401", description = "인증 필요"),
             ApiResponse(responseCode = "403", description = "수정 권한 없음"),
             ApiResponse(responseCode = "404", description = "시간표를 찾을 수 없음"),
-        ]
+        ],
     )
     fun updateTimeTableName(
         @Parameter(hidden = true)
         @LoggedInUser user: User,
-
         @Parameter(description = "수정할 시간표 ID", example = "2", required = true)
         @PathVariable("timeTableId") timeTableId: Long,
-
         @RequestBody
         @OasRequestBody(
             description = "새로운 시간표 이름",
             required = true,
-            content = [Content(schema = Schema(implementation = UpdateTimeTableNameRequest::class))]
+            content = [Content(schema = Schema(implementation = UpdateTimeTableNameRequest::class))],
         )
         updateRequest: UpdateTimeTableNameRequest,
     ): ResponseEntity<UpdateTimeTableNameResponse> {
@@ -135,12 +143,11 @@ class TimeTableController(
             ApiResponse(responseCode = "401", description = "인증 필요"),
             ApiResponse(responseCode = "403", description = "삭제 권한 없음"),
             ApiResponse(responseCode = "404", description = "시간표를 찾을 수 없음"),
-        ]
+        ],
     )
     fun deleteTimeTable(
         @Parameter(hidden = true)
         @LoggedInUser user: User,
-
         @Parameter(description = "삭제할 시간표 ID", example = "3", required = true)
         @PathVariable("timeTableId") timeTableId: Long,
     ): ResponseEntity<Unit> {
@@ -157,20 +164,18 @@ class TimeTableController(
             ApiResponse(responseCode = "401", description = "인증 필요"),
             ApiResponse(responseCode = "404", description = "시간표 또는 강의를 찾을 수 없음"),
             ApiResponse(responseCode = "409", description = "시간 중복 또는 이미 추가된 강의"),
-        ]
+        ],
     )
     fun addLectureToTimeTable(
         @Parameter(hidden = true)
         @LoggedInUser user: User,
-
         @Parameter(description = "강의를 추가할 시간표 ID", example = "1", required = true)
         @PathVariable("timeTableId") timeTableId: Long,
-
         @RequestBody
         @OasRequestBody(
             description = "추가할 강의 ID",
             required = true,
-            content = [Content(schema = Schema(implementation = AddLectureRequest::class))]
+            content = [Content(schema = Schema(implementation = AddLectureRequest::class))],
         )
         request: AddLectureRequest,
     ): ResponseEntity<TimeTableDetailResponse> {
@@ -186,15 +191,13 @@ class TimeTableController(
             ApiResponse(responseCode = "401", description = "인증 필요"),
             ApiResponse(responseCode = "403", description = "삭제 권한 없음"),
             ApiResponse(responseCode = "404", description = "시간표 또는 강의를 찾을 수 없음"),
-        ]
+        ],
     )
     fun removeLectureFromTimeTable(
         @Parameter(hidden = true)
         @LoggedInUser user: User,
-
         @Parameter(description = "시간표 ID", example = "1", required = true)
         @PathVariable("timeTableId") timeTableId: Long,
-
         @Parameter(description = "삭제할 강의 ID", example = "1001", required = true)
         @PathVariable("lectureId") lectureId: Long,
     ): ResponseEntity<Unit> {

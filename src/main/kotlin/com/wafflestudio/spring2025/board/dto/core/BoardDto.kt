@@ -7,7 +7,6 @@ import io.swagger.v3.oas.annotations.media.Schema
 data class BoardDto(
     @Schema(description = "게시판 ID", example = "1")
     val id: Long,
-
     @Schema(description = "게시판 이름", example = "자유게시판")
     val name: String,
 ) {

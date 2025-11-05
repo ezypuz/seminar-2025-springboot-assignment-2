@@ -20,25 +20,19 @@ import io.swagger.v3.oas.annotations.media.Schema
           "createdAt": 1730549021000,
           "updatedAt": 1730549021000
         }
-    """
+    """,
 )
 data class CommentDto(
-
     @Schema(description = "댓글의 고유 ID", example = "1")
     val id: Long?,
-
     @Schema(description = "댓글 내용", example = "좋은 글 감사합니다!")
     val content: String,
-
     @Schema(description = "해당 댓글이 속한 게시글 ID", example = "10")
     val postId: Long,
-
     @Schema(description = "댓글 작성자 정보 (UserDto)")
     val user: UserDto,
-
     @Schema(description = "댓글 작성 시각 (epoch millisecond)", example = "1730549021000")
     val createdAt: Long,
-
     @Schema(description = "댓글 수정 시각 (epoch millisecond)", example = "1730549021000")
     val updatedAt: Long,
 ) {
@@ -55,10 +49,11 @@ data class CommentDto(
         id = commentWithUser.id,
         content = commentWithUser.content,
         postId = commentWithUser.postId,
-        user = UserDto(
-            id = commentWithUser.user!!.id,
-            username = commentWithUser.user.username,
-        ),
+        user =
+            UserDto(
+                id = commentWithUser.user!!.id,
+                username = commentWithUser.user.username,
+            ),
         createdAt = commentWithUser.createdAt.toEpochMilli(),
         updatedAt = commentWithUser.updatedAt.toEpochMilli(),
     )

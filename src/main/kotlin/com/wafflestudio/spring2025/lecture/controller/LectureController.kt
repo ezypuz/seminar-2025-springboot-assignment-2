@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.RestController
 class LectureController(
     private val lectureService: LectureService,
 ) {
-
     @GetMapping("/search")
     @Operation(
         summary = "강의 검색",
@@ -40,44 +39,42 @@ class LectureController(
             ApiResponse(
                 responseCode = "400",
                 description = "요청 파라미터 오류",
-                content = [Content()]
+                content = [Content()],
             ),
             ApiResponse(
                 responseCode = "500",
                 description = "서버 내부 오류",
-                content = [Content()]
+                content = [Content()],
             ),
-        ]
+        ],
     )
     fun searchLectures(
         @Parameter(
             description = "검색할 연도 (예: 2025)",
             example = "2025",
-            required = true
+            required = true,
         )
         @RequestParam year: String,
-
         @Parameter(
             description = "검색할 학기 (SPRING, SUMMER, AUTUMN, WINTER)",
             example = "SPRING",
-            required = true
+            required = true,
         )
         @RequestParam semester: Semester,
-
         @Parameter(
             description = "검색 키워드 (강의명 또는 교수명 일부)",
             example = "컴퓨터프로그래밍",
-            required = true
+            required = true,
         )
         @RequestParam keyword: String,
-
         @Parameter(
             description = "페이지 정보 (page, size, sort)",
             required = false,
-            schema = Schema(
-                type = "object",
-                example = """{ "page": 0, "size": 20, "sort": ["courseTitle,asc"] }"""
-            )
+            schema =
+                Schema(
+                    type = "object",
+                    example = """{ "page": 0, "size": 20, "sort": ["courseTitle,asc"] }""",
+                ),
         )
         @PageableDefault(size = 20, sort = ["courseTitle"]) pageable: Pageable,
     ): ResponseEntity<LectureSearchResponse> {
